@@ -1,0 +1,30 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: manager-role
+rules:
+# Owns the output TLS Secrets; reads/updates creds Secrets.
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+# Emits leader-election + reconciler Events.
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch", "update"]
+# Watches cert-manager Certificates and writes their status / finalizers.
+- apiGroups: ["cert-manager.io"]
+  resources: ["certificates", "certificates/status"]
+  verbs: ["get", "list", "watch", "update", "patch"]
+# Watches the namespaced Issuer CR.
+- apiGroups: ["tencent.cert-manager.io"]
+  resources: ["tencentissuers", "tencentissuers/status"]
+  verbs: ["get", "list", "watch", "update", "patch"]
+# ClusterIssuer support (deferred; RBAC kept so on/off toggles in CRs don't 403).
+- apiGroups: ["tencent.cert-manager.io"]
+  resources: ["tencentclusterissuers", "tencentclusterissuers/status"]
+  verbs: ["get", "list", "watch"]
+# Leader election lease for the controller-runtime manager.
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]

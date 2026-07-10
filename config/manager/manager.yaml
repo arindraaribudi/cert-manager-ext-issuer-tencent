@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: controller-manager-tencent
+  namespace: cert-manager
+  labels:
+    app: cert-manager-ext-issuer-tencent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cert-manager-ext-issuer-tencent
+  template:
+    metadata:
+      labels:
+        app: cert-manager-ext-issuer-tencent
+    spec:
+      serviceAccountName: controller-manager-tencent
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+      - name: manager
+        image: controller:latest
+        imagePullPolicy: IfNotPresent
+        args:
+          - --leader-elect
+          - --health-addr=:8081
+          - --metrics-addr=:8080
+        ports:
+        - containerPort: 8080
+          name: metrics
+        - containerPort: 8081
+          name: health
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          capabilities:
+            drop: ["ALL"]
+        resources:
+          limits:
+            cpu: 500m
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 64Mi

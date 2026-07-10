@@ -1,0 +1,6 @@
+domain: tencent.cert-manager.io
+layout:
+- go.kubebuilder.io/v4
+projectName: cert-manager-ext-issuer-tencent
+repo: github.com/arindraaribudi/cert-manager-ext-issuer-tencent
+version: "3"

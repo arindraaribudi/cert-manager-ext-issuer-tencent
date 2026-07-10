@@ -1,0 +1,54 @@
+# cert-manager-ext-issuer-tencent — cluster-scoped issuer sample
+#
+# Use TencentClusterIssuer when one set of Tencent credentials should serve
+# Certificates across every namespace. The credentials Secret is referenced
+# explicitly (secretRef.namespace); if omitted, it defaults to the Certificate's
+# namespace.
+#
+# Prerequisites:
+#   1. cert-manager installed (v1.13+).
+#   2. This controller deployed (Makefile target: make deploy IMG=<registry>/controller:<tag>)
+#      or: kubectl apply -f install.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-manager-tencent
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: tencent-creds
+  namespace: cert-manager-tencent
+type: Opaque
+stringData:
+  TENCENTCLOUD_SECRET_ID: REPLACE_ME
+  TENCENTCLOUD_SECRET_KEY: REPLACE_ME
+---
+apiVersion: tencent.cert-manager.io/v1alpha1
+kind: TencentClusterIssuer
+metadata:
+  name: prod
+spec:
+  region: ap-guangzhou
+  secretRef:
+    name: tencent-creds
+    namespace: cert-manager-tencent
+  resyncInterval: 24h
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: example-com
+  namespace: default
+spec:
+  secretName: example-com-tls
+  issuerRef:
+    name: prod
+    kind: TencentClusterIssuer
+    group: tencent.cert-manager.io
+  duration: 2160h
+  renewBefore: 720h
+  dnsNames:
+    - example.com
+    - "*.example.com"

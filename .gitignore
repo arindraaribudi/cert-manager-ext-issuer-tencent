@@ -1,0 +1,10 @@
+bin/
+*.test
+*.out
+vendor/
+.idea/
+.vscode/
+cover.out
+coverage.txt
+dist/
+docs/superpowers/

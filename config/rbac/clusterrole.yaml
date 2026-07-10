@@ -1,0 +1,10 @@
+# ClusterRole not currently needed: controller runs namespaced (Role above) and
+# the ClusterIssuer reconciler is deferred. ClusterIssuer creds Secret reads
+# would land here when the deferred work ships. // ponytail: empty ClusterRole
+# left in place so the kustomize layout matches what every kubebuilder project
+# ships; remove once resync/ClusterIssuer support lands and perms materialise.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: tencentclusterissuer-creds-reader
+rules: []

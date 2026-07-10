@@ -1,0 +1,3 @@
+resources:
+  - tencent.cert-manager.io_tencentclusterissuers.yaml
+  - tencent.cert-manager.io_tencentissuers.yaml
