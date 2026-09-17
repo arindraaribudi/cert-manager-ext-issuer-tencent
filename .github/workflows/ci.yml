@@ -2,49 +2,18 @@ name: ci
 
 on:
   push:
-    branches: [main]
     tags:
       - "v*"
-  pull_request:
-  workflow_dispatch:
   workflow_run:
     workflows: ["release"]
     types: [completed]
     branches:
       - "*"
-
 permissions:
   contents: read
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  packages: write
 
 jobs:
-  lint:
-    name: lint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-      - uses: golangci/golangci-lint-action@v8
-        with:
-          version: v2.12.2
-
-  test:
-    name: unit-test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-          cache: true
-      - run: make test
-
   image:
     name: build + push image
     if: |
