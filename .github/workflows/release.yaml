@@ -73,7 +73,7 @@ jobs:
         run: CGO_ENABLED=0 go build -o /tmp/manager-build ./cmd/main.go
 
       - name: trivy fs scan
-        uses: aquasecurity/trivy-action@0.24.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scan-ref: .
